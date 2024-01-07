@@ -2,9 +2,14 @@
 <html lang = "en">
 
 <head>
-    <meta charset = "UTF-8">
-    <meta name = "viewport" content="width=device-width, initial-scale=1.0">
-    <title> Maps </title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> A* and Dijkstra's Algorithm</title>
+    <!-- Lidhjet e Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
 
 
   <!--MAPBOX CDN-->
@@ -15,9 +20,88 @@
     <script src = "https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js"></script>
     <link href = "https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.css">
     <link rel = "stylesheet" href = "./css/main.css">
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: rgb(24, 27, 81);
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        section div {
+            margin-right: 20px;
+        }
+
+        footer {
+            background-color: rgb(24, 27, 81);
+            color: #fff;
+            padding: 5px;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
 </head>
 
 <body>
+    <header class="text-white">
+        <h1> A* Algorithm and Dijkstra's Algorithm</h1>
+    </header>
+
+    <section class="container mt-3">
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="algorithm" value="dijkstra" checked>
+            <label class="form-check-label">
+                A* Algorithm
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="algorithm" value="a-star">
+            <label class="form-check-label">
+                Dijkstra Algorithm
+            </label>
+        </div>
+
+        <div class="form-group">
+            <label for="startPoint">Starting Point:</label>
+            <select class="form-control" id="startPoint" name="startPoint">
+                <option value="location1">Kosovo - Pristina</option>
+                <option value="location2">Albania - Tirana</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="endPoint">Ending Point:</label>
+            <select class="form-control" id="endPoint" name="endPoint">
+                <option value="location1">Kosovo - Pristina</option>
+                <option value="location2">Albania - Tirana</option>
+            </select>
+        </div>
+        
+        <!-- Këtu mund të shtoni kodin tuaj për pathfinding në hartë reale -->
+    </section>
+
     <div class = "container">
         <h1 class = "title"> MAP </h1>
         <div id = "map"></div>
@@ -27,6 +111,9 @@
     <script src = "js/mapboxToken.js"></script>
     <script src = "./js/main.js"></script>
 
+    <footer class="text-white">
+        <p>&copy; 2024 Pathfinding Project. All rights reserved.</p>
+    </footer>
 </body>
 
 </html>

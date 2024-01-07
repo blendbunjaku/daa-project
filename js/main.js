@@ -9,7 +9,7 @@ function mapBox(center){
         container: 'map',
         style: 'mapbox://styles/mapbox/streets-v11',
         center: center,
-        zoom: 9
+        zoom: 8
 
     })
 

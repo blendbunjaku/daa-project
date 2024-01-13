@@ -1,23 +1,40 @@
-class PathfindingAlgorithm {
-    constructor() {
-        this.finished = false;
-    }
+import { useState, useEffect, useRef } from "react";
 
-    /** Reset internal state and initialize new pathfinding
-     * @param {(import("./Node").default)} startNode 
-     * @param {(import("./Node").default)} endNode 
-     */
-    start(startNode, endNode) {
-        this.finished = false;
-        this.startNode = startNode;
-        this.endNode = endNode;
-    }
+function useSmoothStateChange(initialState, fromValue, toValue, duration, trigger, reverse) {
+    const [state, setState] = useState(initialState);
+    const startTime = Date.now();
+    const animationFrameRef = useRef();
 
-    /** Progresses the pathfinding algorithm by one step/iteration
-     @returns {(import("./Node").default)[]} * array of nodes that were updated */
-    nextStep() {
-        return [];
-    }
+    useEffect(() => {
+        function updateState() {
+            const currentTime = Date.now();
+            const elapsedTime = currentTime - startTime;
+
+            if (elapsedTime < duration) {
+                const progress = elapsedTime / duration;
+                const newValue = reverse
+                    ? toValue + progress * (fromValue - toValue)
+                    : fromValue + progress * (toValue - fromValue);
+
+                setState(newValue);
+
+                animationFrameRef.current = requestAnimationFrame(updateState);
+            } 
+            else {
+                setState(reverse ? fromValue : toValue);
+            }
+        }
+
+        if (trigger) {
+            animationFrameRef.current = requestAnimationFrame(updateState);
+
+            return () => {
+                cancelAnimationFrame(animationFrameRef.current);
+            };
+        }
+    }, [fromValue, toValue, duration, trigger, reverse]);
+
+    return state;
 }
 
-export default PathfindingAlgorithm;
+export default useSmoothStateChange;

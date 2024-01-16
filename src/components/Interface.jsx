@@ -34,7 +34,7 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
     function closeHelper() {
         setHelper(false);
     }
-    
+
 return (
      <Drawer
                 className={`side-drawer ${cinematic ? "cinematic" : ""}`}
@@ -202,3 +202,6 @@ return (
             </Drawer>
             )
            })
+           Interface.displayName = "Interface";
+
+            export default Interface;

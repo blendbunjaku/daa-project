@@ -36,6 +36,147 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
     }
 
 return (
+    <>
+    <div className={`nav-top ${cinematic ? "cinematic" : ""}`}>
+        <div className="side slider-container">
+            <Typography id="playback-slider" gutterBottom>
+                Animation playback
+            </Typography>
+            <Slider disabled={!animationEnded}  value={animationEnded ? time : maxTime} min={animationEnded ? 0 : -1} max={maxTime} onChange={(e) => {timeChanged(Number(e.target.value));}} className="slider" aria-labelledby="playback-slider" />
+        </div>
+        <IconButton disabled={!canStart} onClick={handlePlay} style={{ backgroundColor: "#46B780", width: 60, height: 60 }} size="large">
+            {(!started || animationEnded && !playbackOn) 
+                ? <PlayArrow style={{ color: "#fff", width: 26, height: 26 }} fontSize="inherit" />
+                : <Pause style={{ color: "#fff", width: 26, height: 26 }} fontSize="inherit" />
+            }
+        </IconButton>
+        <div className="side">
+            <Button disabled={!animationEnded && started} onClick={clearPath} style={{ color: "#fff", backgroundColor: "#404156", paddingInline: 30, paddingBlock: 7 }} variant="contained">Clear path</Button>
+        </div>
+    </div>
+
+    <div className={`nav-right ${cinematic ? "cinematic" : ""}`}>
+        <Tooltip title="Open settings">
+            <IconButton onClick={() => {setSidebar(true);}} style={{ backgroundColor: "#2A2B37", width: 36, height: 36 }} size="large">
+                <Settings style={{ color: "#fff", width: 24, height: 24 }} fontSize="inherit" />
+            </IconButton>
+        </Tooltip>
+    </div>
+
+    <div className="loader-container">
+        <Fade
+            in={loading}
+            style={{
+                transitionDelay: loading ? "50ms" : "0ms",
+            }}
+            unmountOnExit
+        >
+            <CircularProgress color="inherit" />
+        </Fade>
+    </div>
+
+    <Snackbar 
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }} 
+        open={snack.open} 
+        autoHideDuration={4000} 
+        onClose={closeSnack}>
+        <Alert 
+            onClose={closeSnack} 
+            severity={snack.type} 
+            style={{ width: "100%", color: "#fff" }}
+        >
+            {snack.message}
+        </Alert>
+    </Snackbar>
+
+    <Snackbar 
+        anchorOrigin={{ vertical: "top", horizontal: "center" }} 
+        open={helper} 
+        autoHideDuration={helperTime.current} 
+        onClose={closeHelper}
+    >
+        <div className="cinematic-alert">
+            <Typography fontSize="18px"><b>Cinematic mode</b></Typography>
+            <Typography>Use keyboard shortcuts to control animation</Typography>
+            <Typography>Press <b>Escape</b> to exit</Typography>
+        </div>
+    </Snackbar>
+
+    <div className="mobile-controls">
+        <Button onClick={() => {setPlaceEnd(!placeEnd);}} style={{ color: "#fff", backgroundColor: "#404156", paddingInline: 30, paddingBlock: 7 }} variant="contained">
+            {placeEnd ? "placing end node" : "placing start node"}
+        </Button>
+    </div>
+
+    <Backdrop
+        open={showTutorial}
+        onClick={e => {if(e.target.classList.contains("backdrop")) setShowTutorial(false);}}
+        className="backdrop"
+    >
+        <div className="tutorial-container">
+            <Stepper activeStep={activeStep}>
+                <Step>
+                    <StepLabel>Basic controls</StepLabel>
+                </Step>
+                <Step>
+                    <StepLabel>Playback controls</StepLabel>
+                </Step>
+                <Step>
+                    <StepLabel>Changing settings</StepLabel>
+                </Step>
+            </Stepper>
+            <div className="content">
+                <h1>Map Pathfinding Visualizer</h1>
+                {activeStep === 0 && <div>
+                    <p>
+                        <b>Controls:</b> <br/>
+                        <b>Left button:</b> Place start node <br/>
+                        <b>Right button:</b> Place end node <br/>
+                    </p>
+                    <p>The end node must be placed within the shown radius.</p>
+                    <video className="video" autoPlay muted loop>
+                        <source src="./videos/tutorial1.mp4" type="video/mp4"/>
+                    </video>
+                </div>}
+                {activeStep === 1 && <div>
+                    <p>
+                        To start the visualization, press the <b>Start Button</b> or press <b>Space</b>.<br/>
+                        A playback feature is available after the algorithm ends.
+                    </p>
+                    <video className="video" autoPlay muted loop>
+                        <source src="./videos/tutorial2.mp4" type="video/mp4"/>
+                    </video>
+                </div>}
+                {activeStep === 2 && <div>
+                    <p>
+                        You can customize the settings of the animation in the <b>Settings Sidebar</b>. <br/>
+                        Try to keep the area radius only as large as you need it to be. <br/>
+                        Anything above <b>10km</b> is considered experimental, if you run into performance issues, stop the animation and clear the path.
+                    </p>
+                    <video className="video" autoPlay muted loop>
+                        <source src="./videos/tutorial3.mp4" type="video/mp4"/>
+                    </video>
+                </div>}
+            </div>
+            <div className="controls">
+                <Button onClick={() => {setShowTutorial(false);}}
+                    className="close" variant="outlined" style={{ borderColor: "#9f9f9f", color: "#9f9f9f", paddingInline: 15 }}
+                >
+                    Close
+                </Button>
+                <Button onClick={() => {handleTutorialChange(-1);}}
+                    variant="outlined" style={{ borderColor: "#9f9f9f", color: "#9f9f9f", paddingInline: 18 }}
+                >
+                        Back
+                </Button>
+                <Button onClick={() => {handleTutorialChange(1);}}
+                    variant="contained" style={{ backgroundColor: "#46B780", color: "#fff", paddingInline: 30, fontWeight: "bold" }}
+                >
+                    {activeStep >= 2 ? "Finish" : "Next"}
+                </Button>
+            </div>
+        </div>
+    </Backdrop>
      <Drawer
                 className={`side-drawer ${cinematic ? "cinematic" : ""}`}
                 anchor="left"
@@ -200,6 +341,7 @@ return (
                     </div>
                 </div>
             </Drawer>
+            </>
             )
            })
            Interface.displayName = "Interface";

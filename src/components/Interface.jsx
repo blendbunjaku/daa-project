@@ -4,8 +4,39 @@ import { PlayArrow, Settings, Movie, Pause, Replay } from "@mui/icons-material";
 import { INITIAL_COLORS, LOCATIONS } from "../config";
 import { arrayToRgb, rgbToArray } from "../helpers";
 
+const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, time, maxTime, settings, colors, loading, timeChanged, cinematic, placeEnd, changeRadius, changeAlgorithm, setPlaceEnd, setCinematic, setSettings, setColors, startPathfinding, toggleAnimation, clearPath, changeLocation }, ref) => {
+    const [sidebar, setSidebar] = useState(false);
+    const [snack, setSnack] = useState({
+        open: false,
+        message: "",
+        type: "error",
+    });
+    const [showTutorial, setShowTutorial] = useState(false);
+    const [activeStep, setActiveStep] = useState(0);
+    const [helper, setHelper] = useState(false);
+    const [menuAnchor, setMenuAnchor] = useState(null);
+    const menuOpen = Boolean(menuAnchor);
+    const helperTime = useRef(4800);
+    const rightDown = useRef(false);
+    const leftDown = useRef(false);
 
-<Drawer
+    // Expose showSnack to parent from ref
+    useImperativeHandle(ref, () => ({
+        showSnack(message, type = "error") {
+            setSnack({ open: true, message, type });
+        },
+    }));
+
+    function closeSnack() {
+        setSnack({...snack, open: false});
+    }
+
+    function closeHelper() {
+        setHelper(false);
+    }
+    
+return (
+     <Drawer
                 className={`side-drawer ${cinematic ? "cinematic" : ""}`}
                 anchor="left"
                 open={sidebar}
@@ -165,11 +196,9 @@ import { arrayToRgb, rgbToArray } from "../helpers";
                             <p>Arrows</p>
                             <p>Animation playback</p>
                         </div>
-                        <Button onClick={() => {setActiveStep(0);setShowTutorial(true);}}
-                            variant="contained" style={{ backgroundColor: "#404156", color: "#fff" }}
-                        >
-                            Show tutorial
-                        </Button>
+                       
                     </div>
                 </div>
             </Drawer>
+            )
+           })

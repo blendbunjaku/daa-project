@@ -18,10 +18,12 @@ function Map() {
     const [selectionRadius, setSelectionRadius] = useState([]);
     const [tripsData, setTripsData] = useState([]);
     const [started, setStarted] = useState();
+    const [time, setTime] = useState(0);
     const [animationEnded, setAnimationEnded] = useState(false);
     const [playbackOn, setPlaybackOn] = useState(false);
     const [playbackDirection, setPlaybackDirection] = useState(1);
     const [fadeRadiusReverse, setFadeRadiusReverse] = useState(false);
+    const [cinematic, setCinematic] = useState(false);
     const [placeEnd, setPlaceEnd] = useState(false);
     const [loading, setLoading] = useState(false);
     const [settings, setSettings] = useState({ algorithm: "astar", radius: 4, speed: 5 });
@@ -121,7 +123,23 @@ function Map() {
         }, 400);
     }
 
-    
+    // Start or pause already running animation
+    function toggleAnimation(loop = true, direction = 1) {
+        if(time === 0 && !animationEnded) return;
+        setPlaybackDirection(direction);
+        if(animationEnded) {
+            if(loop && time >= timer.current) {
+                setTime(0);
+            }
+            setStarted(true);
+            setPlaybackOn(!playbackOn);
+            return;
+        }
+        setStarted(!started);
+        if(started) {
+            previousTimeRef.current = null;
+        }
+    }
 
     function clearPath() {
         setStarted(false);
@@ -186,7 +204,24 @@ function Map() {
         }
     }
 
-    
+    useEffect(() => {
+        if(!started) return;
+        requestRef.current = requestAnimationFrame(animate);
+        return () => cancelAnimationFrame(requestRef.current);
+    }, [started, time, animationEnded, playbackOn]);
+
+    useEffect(() => {
+        navigator.geolocation.getCurrentPosition(res => {
+            changeLocation(res.coords);
+        });
+
+        const settings = localStorage.getItem("path_settings");
+        if(!settings) return;
+        const items = JSON.parse(settings);
+
+        setSettings(items.settings);
+        setColors(items.colors);
+    }, []);
 
     return (
         <>
@@ -250,10 +285,37 @@ function Map() {
                 </DeckGL>
 
             </div>
-            
-            <div className="attrib-container"><summary className="maplibregl-ctrl-attrib-button" title="Toggle attribution" aria-label="Toggle attribution"></summary><div className="maplibregl-ctrl-attrib-inner">© <a href="https://carto.com/about-carto/" target="_blank" rel="noopener">CARTO</a>, © <a href="http://www.openstreetmap.org/about/" target="_blank">OpenStreetMap</a> contributors</div></div>
-
+            <Interface 
+                ref={ui}
+                canStart={startNode && endNode}
+                started={started}
+                animationEnded={animationEnded}
+                playbackOn={playbackOn}
+                time={time}
+                startPathfinding={startPathfinding}
+                toggleAnimation={toggleAnimation}
+                clearPath={clearPath}
+                timeChanged={setTime}
+                changeLocation={changeLocation}
+                maxTime={timer.current}
+                settings={settings}
+                setSettings={changeSettings}
+                changeAlgorithm={changeAlgorithm}
+                colors={colors}
+                setColors={changeColors}
+                loading={loading}
+                cinematic={cinematic}
+                setCinematic={setCinematic}
+                placeEnd={placeEnd}
+                setPlaceEnd={setPlaceEnd}
+                changeRadius={changeRadius}
+            />
+            <div className="attrib-container"><summary className="maplibregl-ctrl-attrib-button" 
+            title="Toggle attribution" aria-label="Toggle attribution"></summary>
+            <div className="maplibregl-ctrl-attrib-inner">© <a href="https://carto.com/about-carto/" 
+            target="_blank" rel="noopener">CARTO</a>, © <a href="http://www.openstreetmap.org/about/" target="_blank">OpenStreetMap</a> contributors</div></div>
         </>
+
     );
 }
 

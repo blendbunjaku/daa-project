@@ -154,9 +154,65 @@ function Map() {
         setAnimationEnded(false);
     }
 
-    
+    // Progress animation by one step
+    function animateStep(newTime) {
+        const updatedNodes = state.current.nextStep();
+        for(const updatedNode of updatedNodes) {
+            updateWaypoints(updatedNode, updatedNode.referer);
+        }
 
-    
+        // Found end but waiting for animation to end
+        if(state.current.finished && !animationEnded) {
+            // Render route differently for bidirectional
+            if(settings.algorithm === "bidirectional") {
+                if(!traceNode.current) traceNode.current = updatedNodes[0];
+                const parentNode = traceNode.current.parent;
+                updateWaypoints(parentNode, traceNode.current, "route", Math.max(Math.log2(settings.speed), 1));
+                traceNode.current = parentNode ?? traceNode.current;
+
+                if(!traceNode2.current) {
+                    traceNode2.current = updatedNodes[0];
+                    traceNode2.current.parent = traceNode2.current.prevParent;
+                }
+                const parentNode2 = traceNode2.current.parent;
+                updateWaypoints(parentNode2, traceNode2.current, "route", Math.max(Math.log2(settings.speed), 1));
+                traceNode2.current = parentNode2 ?? traceNode2.current;
+                setAnimationEnded(time >= timer.current && parentNode == null && parentNode2 == null);
+            }
+            else {
+                if(!traceNode.current) traceNode.current = state.current.endNode;
+                const parentNode = traceNode.current.parent;
+                updateWaypoints(parentNode, traceNode.current, "route", Math.max(Math.log2(settings.speed), 1));
+                traceNode.current = parentNode ?? traceNode.current;
+                setAnimationEnded(time >= timer.current && parentNode == null);
+            }
+        }
+
+        // Animation progress
+        if (previousTimeRef.current != null && !animationEnded) {
+            const deltaTime = newTime - previousTimeRef.current;
+            setTime(prevTime => (prevTime + deltaTime * playbackDirection));
+        }
+
+        // Playback progress
+        if(previousTimeRef.current != null && animationEnded && playbackOn) {
+            const deltaTime = newTime - previousTimeRef.current;
+            if(time >= timer.current && playbackDirection !== -1) {
+                setPlaybackOn(false);
+            }
+            setTime(prevTime => (Math.max(Math.min(prevTime + deltaTime * 2 * playbackDirection, timer.current), 0)));
+        }
+    }
+
+    // Animation callback
+    function animate(newTime) {
+        for(let i = 0; i < settings.speed; i++) {
+            animateStep(newTime);
+        }
+
+        previousTimeRef.current = newTime;
+        requestRef.current = requestAnimationFrame(animate);
+    }
 
     // Add new node to the waypoitns property and increment timer
     function updateWaypoints(node, refererNode, color = "path", timeMultiplier = 1) {
@@ -177,7 +233,8 @@ function Map() {
     }
 
     function changeLocation(location) {
-        setViewState({ ...viewState, longitude: location.longitude, latitude: location.latitude, zoom: 13,transitionDuration: 1, transitionInterpolator: new FlyToInterpolator()});
+        setViewState({ ...viewState, longitude: location.longitude, latitude: location.latitude, zoom: 13,transitionDuration: 1, 
+            transitionInterpolator: new FlyToInterpolator()});
     }
 
     function changeSettings(newSettings) {

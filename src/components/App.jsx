@@ -1,16 +1,20 @@
-import { useState } from 'react'
-import reactLogo from '../assets/react.svg'
-import viteLogo from '/public/vite.svg'
-import '../App.scss'
+import Map from "./Map";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+
+const darkTheme = createTheme({
+    palette: {
+        mode: "dark",
+    },
+});
 
 function App() {
-
-  return (
-    <>
-      <div>
-      </div>
-    </>
-  )
+    return (
+        <ThemeProvider theme={darkTheme}>
+            <CssBaseline />
+            <Map/>
+        </ThemeProvider>
+    );
 }
 
-export default App
+export default App;

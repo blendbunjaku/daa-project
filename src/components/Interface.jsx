@@ -1,6 +1,8 @@
 import { Button, IconButton, Typography, Snackbar, Alert, CircularProgress, Fade, Tooltip, Drawer, MenuItem, Select, InputLabel, FormControl, Menu, Backdrop, Stepper, Step, StepLabel } from "@mui/material";
 import { MuiColorInput } from "mui-color-input";
 import { PlayArrow, Settings, Movie, Pause, Replay } from "@mui/icons-material";
+import Slider from "./Slider";
+import { useState, useEffect, useRef, useImperativeHandle, forwardRef } from "react";
 import { INITIAL_COLORS, LOCATIONS } from "../config";
 import { arrayToRgb, rgbToArray } from "../helpers";
 
@@ -34,6 +36,72 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
     function closeHelper() {
         setHelper(false);
     }
+
+    function handleTutorialChange(direction) {
+        if(activeStep >= 2 && direction > 0) {
+            setShowTutorial(false);
+            return;
+        }
+
+        setActiveStep(Math.max(activeStep + direction, 0));
+    }
+
+    // Start pathfinding or toggle playback
+    function handlePlay() {
+        if(!canStart) return;
+        if(!started && time === 0) {
+            startPathfinding();
+            return;
+        }
+        toggleAnimation();
+    }
+
+    function closeMenu() {
+        setMenuAnchor(null);
+    }
+
+    window.onkeydown = e => {
+        if(e.code === "ArrowRight" && !rightDown.current && !leftDown.current && (!started || animationEnded)) {
+            rightDown.current = true;
+            toggleAnimation(false, 1);
+        }
+        else if(e.code === "ArrowLeft" && !leftDown.current && !rightDown.current && animationEnded) {
+            leftDown.current = true;
+            toggleAnimation(false, -1);
+        }
+    };
+
+    window.onkeyup = e => {
+        if(e.code === "Escape") setCinematic(false);
+        else if(e.code === "Space") {
+            e.preventDefault();
+            handlePlay();
+        }
+        else if(e.code === "ArrowRight" && rightDown.current) {
+            rightDown.current = false;
+            toggleAnimation(false, 1);
+        }
+        else if(e.code === "ArrowLeft" && animationEnded && leftDown.current) {
+            leftDown.current = false;
+            toggleAnimation(false, 1);
+        }
+        else if(e.code === "KeyR" && (animationEnded || !started)) clearPath();
+    };
+
+    // Show cinematic mode helper
+    useEffect(() => {
+        if(!cinematic) return;
+        setHelper(true);
+        setTimeout(() => {
+            helperTime.current = 2500;
+        }, 200);
+    }, [cinematic]);
+
+    useEffect(() => {
+        if(localStorage.getItem("path_sawtutorial")) return;
+        setShowTutorial(true);
+        localStorage.setItem("path_sawtutorial", true);
+    }, []);
 
 return (
     <>
@@ -198,9 +266,7 @@ return (
                             disabled={!animationEnded && started}
                         >
                             <MenuItem value={"astar"}>A* algorithm</MenuItem>
-                            <MenuItem value={"greedy"}>Greedy algorithm</MenuItem>
                             <MenuItem value={"dijkstra"}>Dijkstra&apos;s algorithm</MenuItem>
-                            <MenuItem value={"bidirectional"}>Bidirectional Search algorithm</MenuItem>
                         </Select>
                     </FormControl>
 

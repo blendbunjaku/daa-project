@@ -99,7 +99,7 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
 
     useEffect(() => {
         if(localStorage.getItem("path_sawtutorial")) return;
-        setShowTutorial(true);
+        setShowTutorial(false);
         localStorage.setItem("path_sawtutorial", true);
     }, []);
 

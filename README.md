@@ -28,3 +28,6 @@ https://github.com/blendbunjaku/daa-project/assets/36742404/7ec0eb8a-7ef8-490b-a
 ### Dijkstra’s algorithm
 https://github.com/blendbunjaku/daa-project/assets/36742404/36364b6e-b6dd-4e24-9542-feb55a2b2492
 
+### Deployed in Netlify
+https://daa-project-gr-14.netlify.app/
+

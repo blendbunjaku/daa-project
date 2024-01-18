@@ -31,3 +31,14 @@ https://github.com/blendbunjaku/daa-project/assets/36742404/36364b6e-b6dd-4e24-9
 ### Deployed in Netlify
 https://daa-project-gr-14.netlify.app/
 
+## Contributors
+- Technical Project Manager: [Blend Bunjaku](https://github.com/blendbunjaku)
+- UI/UX Lead: [Ereblina Zogjani](https://github.com/EreblinaZ)
+- Frontend Team Leader: [Diona Muçiqi](https://github.com/dionamuciqi)
+- Backend Team Leader: [Gresa Plakolli](https://github.com/GresaPlakollii)
+- Frontend Team Member: [Ajshe Selmani](https://github.com/ajsheselmani)
+- Frontend Team Member: [Albina Kuleta](https://github.com/AlbinaKuleta)
+- Frontend Team Member: [Ermal Millaku](https://github.com/ErmalMillaku09)
+- Backend Team Member: [Erblin Kelmendi](https://github.com/ErbIin)
+- QA/Backend Team Member: [Haki Hoti](https://github.com/HakiHoti)
+- DevOps: [Dominik Pllashniku](https://github.com/dominikpllashniku)
